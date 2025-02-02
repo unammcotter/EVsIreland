@@ -6,22 +6,25 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service                
+from selenium.webdriver.chrome.options import Options
 
-URL = "https://stats.beepbeep.ie/"
+url = "https://stats.beepbeep.ie/"
 
-chrome_options = webdriver.ChromeOptions()
+chrome_options = Options()
 chrome_options.add_argument("--disable-extensions")  
 chrome_options.add_argument("--disable-gpu")
-ser = Service("chromedriver.exe")
-service = webdriver.ChromeService(executable_path=chromedriver_bin)
-driver = webdriver.Chrome(service=ser,options=chrome_options)
-driver.get(URL)
+
+service = webdriver.ChromeService()
+driver = webdriver.Chrome(service=service)
+#ser = Service("chromedriver.exe")
+#driver = webdriver.Chrome(service=ser,options=chrome_options)
+driver.get(url)
 print(driver.title)
 
 #element = driver.find_element(By.ID ,"#Id_of_element")
 
 
-page = requests.get(URL)
+page = requests.get(url)
 if page.status_code == 200:
     soup = BeautifulSoup(page.content, "html.parser")
     print("Website Accessed Successfully.")
