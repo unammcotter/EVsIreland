@@ -20,50 +20,74 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     service = webdriver.ChromeService()
     driver = webdriver.Chrome(service=service)
     #ser = Service("chromedriver.exe")
-    #driver = webdriver.Chrome(service=ser,options=chrome_options)
+    #----------------------driver = webdriver.Chrome(service=ser,options=chrome_options)------------------------
     driver.get(url)
     sleep(2)
     print(driver.title)
 
     #access drop down filter menu
-    #find & click on drowp down menu
+    #--------------------------------find & click on drowp down menu-----------------------------
     drop_arrow = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]')
     drop_arrow.click()
-    sleep(5)
+    sleep(2)
 
-    #find & click on date menu
+    #-----------------------------------find & click on date menu---------------------------------------
     date_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[1]/a')
     date_filter.click()
-    sleep(5)
+    sleep(2)
 
     #find & click on year
     #select year
-    year_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[1]/div/div/select')
-    year = Select(year_element)
+    year_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[1]/div/div/select')
+    year1 = Select(year_element1)
     #option_list = year.options
-    year.select_by_value('2024')
-    sleep(5)
+    year1.select_by_value('2024')
+    sleep(2)
 
     year_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[2]/div/div/select')
     year2 = Select(year_element2)
     #option_list = year.options
     year2.select_by_value('2024')
-    sleep(5)
+    sleep(2)
 
     #find & click on month
     #select start month
-    year_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[1]/div/div/select')
-    year = Select(year_element)
+    month_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[1]/div/div/select')
+    month1 = Select(month_element1)
     #option_list = year.options
-    year.select_by_visible_text('January')
-    sleep(5)
+    month1.select_by_visible_text('January')
+    sleep(2)
 
     #select start month
-    year_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[2]/div/div/select')
-    year2 = Select(year_element2)
+    month_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[2]/div/div/select')
+    month2 = Select(month_element2)
     #option_list = year.options
-    year2.select_by_visible_text('January')
-    sleep(5)
+    month2.select_by_visible_text('January')
+    sleep(2)
+
+    #----------------------find & click on vehicle menu----------------------------------------------
+    veh_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/a')
+    veh_filter.click()
+    sleep(2)
+
+    #find & select make
+    make_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[1]/div/div[2]/input')
+    make_element.send_keys("alfa romeo")
+    #make= Select(make_element)
+    #option_list = make.options
+    print("we got this far")
+    sleep(100)
+    #make.select_by_visible_text('alfa romeo')
+    sleep(2)
+
+    #find & select mmodel
+    model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[1]')
+    model = Select(model_element)
+    #option_list = year.options
+    model.select_by_visible_text('giulia')
+    sleep(2)
+
+    #-------------------------------------------------------------------------------------------
 
 
     #element = driver.find_element(By.ID ,"#Id_of_element")
