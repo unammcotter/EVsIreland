@@ -9,6 +9,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
 
@@ -20,6 +23,7 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     service = webdriver.ChromeService()
     driver = webdriver.Chrome(service=service)
     #ser = Service("chromedriver.exe")
+   
     #----------------------driver = webdriver.Chrome(service=ser,options=chrome_options)------------------------
     driver.get(url)
     sleep(2)
@@ -29,65 +33,80 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     #--------------------------------find & click on drowp down menu-----------------------------
     drop_arrow = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]')
     drop_arrow.click()
-    sleep(2)
+    #sleep(2)
 
     #-----------------------------------find & click on date menu---------------------------------------
     date_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[1]/a')
     date_filter.click()
-    sleep(2)
+    #sleep(1)
 
     #find & click on year
     #select year
     year_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[1]/div/div/select')
     year1 = Select(year_element1)
-    #option_list = year.options
-    year1.select_by_value('2024')
-    sleep(2)
+    year1.select_by_value(str(YR))
+    #sleep(1)
 
     year_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[2]/div/div/select')
     year2 = Select(year_element2)
-    #option_list = year.options
-    year2.select_by_value('2024')
-    sleep(2)
+    year2.select_by_value(str(YR))
+    #sleep(1)
 
     #find & click on month
     #select start month
     month_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[1]/div/div/select')
     month1 = Select(month_element1)
-    #option_list = year.options
-    month1.select_by_visible_text('January')
-    sleep(2)
+    month1.select_by_visible_text(MTH)
+    #sleep(1)
 
-    #select start month
+    #select end month
     month_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[2]/div/div/select')
     month2 = Select(month_element2)
-    #option_list = year.options
-    month2.select_by_visible_text('January')
-    sleep(2)
+    month2.select_by_visible_text(MTH)
+    sleep(1)
 
     #----------------------find & click on vehicle menu----------------------------------------------
     veh_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/a')
     veh_filter.click()
-    sleep(2)
 
     #find & select make
     make_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[1]/div/div[2]/input')
     make_element.send_keys("alfa romeo")
-    #make= Select(make_element)
-    #option_list = make.options
-    print("we got this far")
-    sleep(100)
-    #make.select_by_visible_text('alfa romeo')
-    sleep(2)
+    sleep(2) #wait for search to load (wsl)
+    make_element.send_keys(Keys.DOWN)
+    make_element.send_keys(Keys.RETURN)
+    make_element.send_keys(Keys.ESCAPE)  
 
     #find & select mmodel
-    model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[1]')
-    model = Select(model_element)
-    #option_list = year.options
-    model.select_by_visible_text('giulia')
+    model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
+    #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+    #sleep (10)
+    model_element.send_keys("giulia")
     sleep(2)
+    model_element.send_keys(Keys.DOWN)
+    model_element.send_keys(Keys.RETURN)
+    model_element.send_keys(Keys.ESCAPE)
 
-    #-------------------------------------------------------------------------------------------
+#-------------------------------------------select engine type--------------------------------
+    engine_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[5]/div/div[2]/input')
+    #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+    #sleep (10)
+    engine_element.send_keys("electric")
+    sleep(2)
+    engine_element.send_keys(Keys.DOWN)
+    engine_element.send_keys(Keys.RETURN)
+    engine_element.send_keys(Keys.ESCAPE)
+    
+    print("we got this far")
+    sleep(10)
+
+    filter_button = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[2]/a[1]')
+    filter_button.click()
+
+    sleep(10)
+
+
+    #______________________________________________________________________________________________________
 
 
     #element = driver.find_element(By.ID ,"#Id_of_element")
@@ -117,12 +136,13 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
 if __name__ == "__main__":
     url = "https://stats.beepbeep.ie/"
 
-    YR = arr.array('i',[2024,2023,2022])
+    YR = (2024,2023)
+    #YR = (2024,2023,2022)
 
     MTH = ["January", "February", "March", "April", "May", "June", "July",
             "August", "September", "October", "November", "December"]
 
-    MTHnum = arr.array('i',[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    #MTHnum = arr.array('i',[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
     ENGINE = ["Electric", "Diesel Electric (Hybrid)", "Diesel/Plug-In Electric Hybrid",
             "Petrol Electric (Hybrid)", "Petrol/Plug-In Electric Hybrid"]
@@ -134,5 +154,7 @@ if __name__ == "__main__":
                 "POLESTAR", "PORSCHE", "RENAULT", "SEAT", "SKODA", "SMART",
                 "SSANGYONG", "SUBARU", "SUZUKI", "TESLA", "TOYOTA", "VOLKSWAGEN",
                 "VOLVO"]
-
-    scrape_site(url, YR, MTH, car_make, ENGINE)
+    for i in YR:
+        for n in MTH:
+            scrape_site(url, i, n, car_make, ENGINE)
+            print("we did this")
