@@ -71,27 +71,27 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
 
     #find & select make
     make_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[1]/div/div[2]/input')
-    make_element.send_keys("alfa romeo")
+    make_element.send_keys(car_make)
     sleep(2) #wait for search to load (wsl)
     make_element.send_keys(Keys.DOWN)
     make_element.send_keys(Keys.RETURN)
     make_element.send_keys(Keys.ESCAPE)  
 
-    #find & select mmodel
-    model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
-    #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
-    #sleep (10)
-    model_element.send_keys("giulia")
-    sleep(2)
-    model_element.send_keys(Keys.DOWN)
-    model_element.send_keys(Keys.RETURN)
-    model_element.send_keys(Keys.ESCAPE)
+   # #find & select mmodel
+   # model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
+   # #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+   # #sleep (10)
+   # model_element.send_keys("giulia")
+   # sleep(2)
+  #  model_element.send_keys(Keys.DOWN)
+  #  model_element.send_keys(Keys.RETURN)
+  #  model_element.send_keys(Keys.ESCAPE)
 
 #-------------------------------------------select engine type--------------------------------
     engine_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[5]/div/div[2]/input')
     #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
     #sleep (10)
-    engine_element.send_keys("electric")
+    engine_element.send_keys(ENGINE)
     sleep(2)
     engine_element.send_keys(Keys.DOWN)
     engine_element.send_keys(Keys.RETURN)
@@ -103,6 +103,32 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     filter_button = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[2]/a[1]')
     filter_button.click()
 
+#-------------------------------find avaible models---------------------------------------
+   # model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
+   # #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+   # #sleep (10)
+   # model_element.send_keys("giulia")
+   # sleep(2)
+  #  model_element.send_keys(Keys.DOWN)
+  #  model_element.send_keys(Keys.RETURN)
+  #  model_element.send_keys(Keys.ESCAPE)
+    
+    car_model_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr')
+
+    rows = 1+len(driver.find_elements(By.XPATH,'//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols) 
+
+    for r in range(2, rows+1): 
+        for p in range(1, cols+1): 
+            
+            # obtaining the text from each column of the table 
+            value = driver.find_element(By.XPATH, 
+                '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr["+str(r)+"]/td["+str(p)+"]').text 
+            print(value, end='       ') 
+        print() 
+
     sleep(10)
 
 
@@ -111,27 +137,30 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
 
     #element = driver.find_element(By.ID ,"#Id_of_element")
 
-    page = requests.get(url)
+    #page = requests.get(url)
     #soup = BeautifulSoup(page.content, "html.parser")
     #segment = soup.find(id = "app.")
     #seg_element = driver.find_element(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div')
-    seg_table = driver.find_element(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div/table')
+    #seg_table = driver.find_element(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div/table')
 
 
 
-    if not seg_table:
-        print("Segment element not found")
+    #if not seg_table:
+   #     print("Segment element not found")
     #print(results.prettify())
 
-    if page.status_code == 200:
-        soup = BeautifulSoup(page.content, "html.parser")
-        print("Website Accessed Successfully.")
+    #if page.status_code == 200:
+   #     soup = BeautifulSoup(page.content, "html.parser")
+   #     print("Website Accessed Successfully.")
         #results = soup.find(id = "sales-by-segment")
         #print(results.prettify())
-    else:
-        print("Issue Accessing Website")
-
-    return
+    #else:
+       # print("Issue Accessing Website")
+        
+    Nurl = driver.current_url
+    print(Nurl)
+    sleep (50)
+    return Nurl
 
 if __name__ == "__main__":
     url = "https://stats.beepbeep.ie/"
@@ -156,5 +185,7 @@ if __name__ == "__main__":
                 "VOLVO"]
     for i in YR:
         for n in MTH:
-            scrape_site(url, i, n, car_make, ENGINE)
-            print("we did this")
+            for z in car_make:
+                for x in ENGINE:
+                    Nurl = scrape_site(url, i, n, z, x)
+                    print("we did this")
