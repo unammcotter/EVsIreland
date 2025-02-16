@@ -15,15 +15,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
 
-def scrape_site (url, YR, MTH, car_make, ENGINE):
+def driver_setup():
     chrome_options = Options()
     chrome_options.add_argument("--disable-extensions")  
     chrome_options.add_argument("--disable-gpu")
 
     service = webdriver.ChromeService()
     driver = webdriver.Chrome(service=service)
-    #ser = Service("chromedriver.exe")
-   
+
+    return driver
+
+def drop_down_menu (url, driver):
     #----------------------driver = webdriver.Chrome(service=ser,options=chrome_options)------------------------
     driver.get(url)
     sleep(2)
@@ -33,31 +35,31 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     #--------------------------------find & click on drowp down menu-----------------------------
     drop_arrow = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]')
     drop_arrow.click()
-    #sleep(2)
 
     #-----------------------------------find & click on date menu---------------------------------------
     date_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[1]/a')
     date_filter.click()
-    #sleep(1)
 
+    #----------------------find & click on vehicle menu----------------------------------------------
+    veh_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/a')
+    veh_filter.click()
+
+def enter_yr_mth(driver,YR,MTH):
     #find & click on year
     #select year
     year_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[1]/div/div/select')
     year1 = Select(year_element1)
     year1.select_by_value(str(YR))
-    #sleep(1)
 
     year_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[1]/div[2]/div/div/select')
     year2 = Select(year_element2)
     year2.select_by_value(str(YR))
-    #sleep(1)
 
     #find & click on month
     #select start month
     month_element1 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[1]/div/div/select')
     month1 = Select(month_element1)
     month1.select_by_visible_text(MTH)
-    #sleep(1)
 
     #select end month
     month_element2 = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[1]/div[2]/div[2]/div[2]/div/div/select')
@@ -65,105 +67,85 @@ def scrape_site (url, YR, MTH, car_make, ENGINE):
     month2.select_by_visible_text(MTH)
     sleep(1)
 
-    #----------------------find & click on vehicle menu----------------------------------------------
-    veh_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/a')
-    veh_filter.click()
-
+def enter_make(driver,car_make):
     #find & select make
     make_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[1]/div/div[2]/input')
+    #make_element.send_keys("MERCEDES-BENZ")
+    make_element.send_keys(Keys.BACK_SPACE)
     make_element.send_keys(car_make)
     sleep(2) #wait for search to load (wsl)
     make_element.send_keys(Keys.DOWN)
     make_element.send_keys(Keys.RETURN)
-    make_element.send_keys(Keys.ESCAPE)  
+    make_element.send_keys(Keys.ESCAPE) 
 
-   # #find & select mmodel
-   # model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
-   # #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
-   # #sleep (10)
-   # model_element.send_keys("giulia")
-   # sleep(2)
-  #  model_element.send_keys(Keys.DOWN)
-  #  model_element.send_keys(Keys.RETURN)
-  #  model_element.send_keys(Keys.ESCAPE)
-
-#-------------------------------------------select engine type--------------------------------
+def enter_engine(driver,engine):
+    #-------------------------------------------select engine type--------------------------------
     engine_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[5]/div/div[2]/input')
-    #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+    #engine_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[5]/div/div[2]/input')))
     #sleep (10)
-    engine_element.send_keys(ENGINE)
+    #engine_element.send_keys("electric")
+    engine_element.send_keys(Keys.BACK_SPACE)
+    engine_element.send_keys(engine)
     sleep(2)
     engine_element.send_keys(Keys.DOWN)
     engine_element.send_keys(Keys.RETURN)
-    engine_element.send_keys(Keys.ESCAPE)
-    
-    print("we got this far")
-    sleep(10)
+    engine_element.send_keys(Keys.ESCAPE)     
 
+def click_filter_button(driver):
     filter_button = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[2]/a[1]')
     filter_button.click()
+    sleep(10)
 
-#-------------------------------find avaible models---------------------------------------
-   # model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
-   # #model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
-   # #sleep (10)
-   # model_element.send_keys("giulia")
-   # sleep(2)
-  #  model_element.send_keys(Keys.DOWN)
-  #  model_element.send_keys(Keys.RETURN)
-  #  model_element.send_keys(Keys.ESCAPE)
-    
-    car_model_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr')
+def enter_model(driver,car_model):
+    #find & select mmodel
+    model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
+    model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
+    sleep (10)
+    model_element.send_keys(car_model)
+    sleep(2)
+    model_element.send_keys(Keys.DOWN)
+    model_element.send_keys(Keys.RETURN)
+    model_element.send_keys(Keys.ESCAPE)
 
-    rows = 1+len(driver.find_elements(By.XPATH,'//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr'))
+def get_models(driver):
+    #-------------------------------find avaible models---------------------------------------
+    car_model_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[5]/div/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[5]/div/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr[1]/td'))
     print(rows) 
     print(cols) 
 
-    for r in range(2, rows+1): 
-        for p in range(1, cols+1): 
-            
+    car_models = [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
-            value = driver.find_element(By.XPATH, 
-                '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr["+str(r)+"]/td["+str(p)+"]').text 
-            print(value, end='       ') 
-        print() 
-
-    sleep(10)
-
-
-    #______________________________________________________________________________________________________
+            car_models[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(4)+']').text
+            car_models = car_models.str.lower()
+        print(car_models)
+    
+    return car_models
 
 
-    #element = driver.find_element(By.ID ,"#Id_of_element")
+def scrape_site (url, driver, YR, MTH, car_make, engine):
+    drop_down_menu(url, driver)
+    enter_yr_mth(driver,YR,MTH)
+    enter_make(driver, car_make)
+    enter_engine(driver,engine)
+    click_filter_button(driver)
 
-    #page = requests.get(url)
-    #soup = BeautifulSoup(page.content, "html.parser")
-    #segment = soup.find(id = "app.")
-    #seg_element = driver.find_element(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div')
-    #seg_table = driver.find_element(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div/table')
+    car_models=get_models(driver)
 
+    if car_models != [] :
+        drop_down_menu(url, driver)
+        enter_model(driver,car_models)
+        click_filter_button(driver)
+    
 
-
-    #if not seg_table:
-   #     print("Segment element not found")
-    #print(results.prettify())
-
-    #if page.status_code == 200:
-   #     soup = BeautifulSoup(page.content, "html.parser")
-   #     print("Website Accessed Successfully.")
-        #results = soup.find(id = "sales-by-segment")
-        #print(results.prettify())
-    #else:
-       # print("Issue Accessing Website")
-        
-    Nurl = driver.current_url
-    print(Nurl)
-    sleep (50)
-    return Nurl
 
 if __name__ == "__main__":
     url = "https://stats.beepbeep.ie/"
+    driver = driver_setup()
 
     YR = (2024,2023)
     #YR = (2024,2023,2022)
@@ -173,8 +155,8 @@ if __name__ == "__main__":
 
     #MTHnum = arr.array('i',[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
-    ENGINE = ["Electric", "Diesel Electric (Hybrid)", "Diesel/Plug-In Electric Hybrid",
-            "Petrol Electric (Hybrid)", "Petrol/Plug-In Electric Hybrid"]
+    ENGINE = ["electric", "diesel electric (hybrid)", "diesel/plug-in electric hybrid",
+            "petrol electric (hybrid)", "petrol/plug-in electric hybrid"]
 
     car_make = ["ALFA ROMEO", "AUDI", "BENTLEY", "BMW", "BYD", "CITROEN", "CUPRA",
                 "DACIA", "DS", "FERRARI", "FIAT", "FORD", "GWM", "HONDA", "HYUNDAI",
@@ -187,5 +169,6 @@ if __name__ == "__main__":
         for n in MTH:
             for z in car_make:
                 for x in ENGINE:
-                    Nurl = scrape_site(url, i, n, z, x)
-                    print("we did this")
+                    scrape_site(url, driver, i, n, z, x)
+                    sleep (2)
+
