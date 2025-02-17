@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
+import string
 
 def driver_setup():
     chrome_options = Options()
@@ -28,7 +29,7 @@ def driver_setup():
 def drop_down_menu (url, driver):
     #----------------------driver = webdriver.Chrome(service=ser,options=chrome_options)------------------------
     driver.get(url)
-    sleep(2)
+    sleep(1)
     print(driver.title)
 
     #access drop down filter menu
@@ -73,7 +74,7 @@ def enter_make(driver,car_make):
     #make_element.send_keys("MERCEDES-BENZ")
     make_element.send_keys(Keys.BACK_SPACE)
     make_element.send_keys(car_make)
-    sleep(2) #wait for search to load (wsl)
+    sleep(1) #wait for search to load (wsl)
     make_element.send_keys(Keys.DOWN)
     make_element.send_keys(Keys.RETURN)
     make_element.send_keys(Keys.ESCAPE) 
@@ -86,7 +87,7 @@ def enter_engine(driver,engine):
     #engine_element.send_keys("electric")
     engine_element.send_keys(Keys.BACK_SPACE)
     engine_element.send_keys(engine)
-    sleep(2)
+    sleep(1)
     engine_element.send_keys(Keys.DOWN)
     engine_element.send_keys(Keys.RETURN)
     engine_element.send_keys(Keys.ESCAPE)     
@@ -94,7 +95,7 @@ def enter_engine(driver,engine):
 def click_filter_button(driver):
     filter_button = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[2]/a[1]')
     filter_button.click()
-    sleep(10)
+    sleep(5)
 
 def enter_model(driver,car_model):
     #find & select mmodel
@@ -121,10 +122,98 @@ def get_models(driver):
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
             car_models[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(4)+']').text
-            car_models = car_models.str.lower()
-        print(car_models)
+            car_models[r-1] = car_models[r-1].lower()
     
     return car_models
+
+def get_seg(driver):
+    seg_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols)
+
+    seg = [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
+            # obtaining the text from each column of the table 
+            seg[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            seg[r-1] = seg[r-1].lower()
+    
+    return seg
+
+def get_body(driver):
+    body_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols)
+
+    body= [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
+            # obtaining the text from each column of the table 
+            body[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            body[r-1] = body[r-1].lower()
+    
+    return body
+
+def enter_body(driver,car_body):
+    #find & select make
+    body_element = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[3]/div/div[2]/input')
+    #make_element.send_keys("MERCEDES-BENZ")
+    body_element.send_keys(Keys.BACK_SPACE)
+    body_element.send_keys(car_body)
+    sleep(1) #wait for search to load (wsl)
+    body_element.send_keys(Keys.DOWN)
+    body_element.send_keys(Keys.RETURN)
+    body_element.send_keys(Keys.ESCAPE) 
+
+def get_transmission(driver):
+    transmission_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols)
+
+    transmission = [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
+            # obtaining the text from each column of the table 
+            transmission[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            transmission[r-1] = transmission[r-1].lower()
+    
+    return transmission
+
+def enter_transmission(driver,car_transmission):
+    #find & select make
+    transmission_element = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[4]/div/div[2]/input')
+    transmission_element.send_keys(Keys.BACK_SPACE)
+    transmission_element.send_keys(car_transmission)
+    sleep(1) #wait for search to load (wsl)
+    transmission_element.send_keys(Keys.DOWN)
+    transmission_element.send_keys(Keys.RETURN)
+    transmission_element.send_keys(Keys.ESCAPE) 
+
+def get_county(driver):
+    county_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols)
+
+    county = [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
+            # obtaining the text from each column of the table 
+            county[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            
+    
+    return county
 
 
 def scrape_site (url, driver, YR, MTH, car_make, engine):
@@ -140,6 +229,24 @@ def scrape_site (url, driver, YR, MTH, car_make, engine):
         drop_down_menu(url, driver)
         enter_model(driver,car_models)
         click_filter_button(driver)
+        
+        car_bodies = get_body(driver)
+
+        if len(car_bodies) > 1:
+            for i in car_bodies:
+                drop_down_menu(url, driver)
+                enter_body(driver,i)
+                click_filter_button(driver)
+
+                transmission = get_transmission(driver)
+                if len(transmission) > 1:
+                    for x in transmission:
+                        drop_down_menu(url, driver)
+                        enter_transmission(driver,x)
+                        click_filter_button(driver)
+
+                        get_seg(driver)
+                        get_county(driver)
     
 
 
