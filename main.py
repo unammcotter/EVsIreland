@@ -1,6 +1,10 @@
 #Created 30/01/2025
 #Author Úna Cotter
 #Scapper File test area
+#To do:
+#Change variable to hnadle table
+#need to erase alfero and replace with audi
+#save table as an excel file
 
 import requests
 from bs4 import BeautifulSoup
@@ -15,6 +19,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
 import string
+from csv import writer
+import pandas as pd
 
 def driver_setup():
     chrome_options = Options()
@@ -71,8 +77,9 @@ def enter_yr_mth(driver,YR,MTH):
 def enter_make(driver,car_make):
     #find & select make
     make_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[1]/div/div[2]/input')
-    #make_element.send_keys("MERCEDES-BENZ")
+    #make_element.send_keys("MERCEDES-BENZ"
     make_element.send_keys(Keys.BACK_SPACE)
+    sleep(1)
     make_element.send_keys(car_make)
     sleep(1) #wait for search to load (wsl)
     make_element.send_keys(Keys.DOWN)
@@ -101,7 +108,8 @@ def enter_model(driver,car_model):
     #find & select mmodel
     model_element = driver.find_element(By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')
     model_element = WebDriverWait(driver,60).until(EC.element_to_be_clickable((By.XPATH,'/html/body/div/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[2]/div/div[2]/input')))
-    sleep (10)
+    model_element.send_keys(Keys.BACK_SPACE)
+    sleep (1)
     model_element.send_keys(car_model)
     sleep(2)
     model_element.send_keys(Keys.DOWN)
@@ -156,7 +164,7 @@ def get_body(driver):
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
             body[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
-            body[r-1] = body[r-1].lower()
+            #body[r-1] = body[r-1].lower()
     
     return body
 
@@ -172,9 +180,9 @@ def enter_body(driver,car_body):
     body_element.send_keys(Keys.ESCAPE) 
 
 def get_transmission(driver):
-    transmission_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr')
-    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr'))
-    cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr[1]/td'))
+    transmission_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr[1]/td'))
     print(rows) 
     print(cols)
 
@@ -183,7 +191,7 @@ def get_transmission(driver):
     if rows != 0:
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
-            transmission[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[8]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            transmission[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[9]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
             transmission[r-1] = transmission[r-1].lower()
     
     return transmission
@@ -211,12 +219,28 @@ def get_county(driver):
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
             county[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
-            
-    
+
     return county
 
+def get_quant(driver):
+    county_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]'))
+    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    print(rows) 
+    print(cols)
 
-def scrape_site (url, driver, YR, MTH, car_make, engine):
+    qcounty = [None] * rows
+
+    if rows != 0:
+        for r in range(1, rows+1): 
+            # obtaining the text from each column of the table 
+            qcounty[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+
+    return qcounty
+
+
+def scrape_site (url, driver, df, YR, MTH, car_make, engine):
+    
     drop_down_menu(url, driver)
     enter_yr_mth(driver,YR,MTH)
     enter_make(driver, car_make)
@@ -226,33 +250,123 @@ def scrape_site (url, driver, YR, MTH, car_make, engine):
     car_models=get_models(driver)
 
     if car_models != [] :
-        drop_down_menu(url, driver)
-        enter_model(driver,car_models)
-        click_filter_button(driver)
-        
-        car_bodies = get_body(driver)
+        for n in car_models:
 
-        if len(car_bodies) > 1:
-            for i in car_bodies:
-                drop_down_menu(url, driver)
-                enter_body(driver,i)
-                click_filter_button(driver)
+            drop_down_menu(url, driver)
+            enter_make(driver, car_make)
+            enter_engine(driver,engine)
+            enter_model(driver,n)
+            click_filter_button(driver)
+            
+            car_bodies = get_body(driver)
 
+            if len(car_bodies) > 1:
+                for i in car_bodies:
+                    drop_down_menu(url, driver)
+                    enter_body(driver,i)
+                    click_filter_button(driver)
+
+                    transmission = get_transmission(driver)
+                    if len(transmission) > 1:
+                        for x in transmission:
+                            drop_down_menu(url, driver)
+                            enter_transmission(driver,x)
+                            click_filter_button(driver)
+                    elif len(transmission) == 1:
+                        car_seg = get_seg(driver)
+                        car_county = get_county(driver)
+                        quant = get_quant(driver)
+                        for i in car_county:
+                            List = [YR, MTH, car_make, engine, n, car_seg, car_bodies,
+                                transmission, i, quant]
+                            df.loc[len(df)] = List
+
+            elif len(car_bodies) == 1:  
                 transmission = get_transmission(driver)
-                if len(transmission) > 1:
-                    for x in transmission:
-                        drop_down_menu(url, driver)
-                        enter_transmission(driver,x)
-                        click_filter_button(driver)
+                car_seg = get_seg(driver)
+                car_county = get_county(driver)
+                quant = get_quant(driver)
+                for i in car_county:
+                    List = [YR, MTH, car_make, engine, n, car_seg, car_bodies,
+                        transmission, i, quant]
+                    df.loc[len(df)] = List   
 
-                        get_seg(driver)
-                        get_county(driver)
+    # initializing the titles and rows list
+    fields = []
+    rows = []
+
+    filename = "EVDATA.csv"
+    # List that we want to add as a new row
+    List = [6, 'William', 5532, 1, 'UAE']
     
+    # Open our existing CSV file in append mode
+    # Create a file object for this file
+    with open('event.csv', 'a') as f_object:
+    
+        # Pass this file object to csv.writer()
+        # and get a writer object
+        writer_object = writer(f_object)
+    
+        # Pass the list as an argument into
+        # the writerow()
+        writer_object.writerow(List)
+    
+        # Close the file object
+        f_object.close()
+
+
+
+
+    # # Open the CSV file for reading
+    # with open(filename, mode='r') as file:
+    #     # Create a CSV reader with DictReader
+    #     csv_reader = csv.DictReader(file)
+
+    #     # Initialize an empty list to store the dictionaries
+    #     data_list = []
+    #     # Iterate through each row in the CSV file
+    #     for row in csv_reader:
+    #         # Append each row (as a dictionary) to the list
+    #         data_list.append(row)
+
+    # # Print the list of dictionaries
+    # for data in data_list:
+    #     print(data)
+
+    # # reading csv file
+    # with open (filename, 'r') as csvfile:
+    #     # creating a csv reader object
+    #     csvreader = csv.reader(csvfile)
+
+    #     # extracting field names through first row
+    #     fields = next(csvreader)
+        
+    #     # extracting each data row one by one
+    #     for row in csvreader:
+    #         rows.append(row)
+
+    #     # get total number of rows
+    #     print("Total no. of rows: %d" % (csvreader.line_num))
+   
+    # # printing the field names
+    # print('Field names are:' + ', '.join(field for field in fields))
+
+    # # printing first 5 rows
+    # print('\nFirst 5 rows are:\n')
+    # for row in rows[:5]:
+    #     # parsing each column of a row
+    #     for col in row:
+    #         print("%10s" % col, end=" "),
+    #     print('\n')
+
+
+
 
 
 if __name__ == "__main__":
     url = "https://stats.beepbeep.ie/"
     driver = driver_setup()
+    count = 0
 
     YR = (2024,2023)
     #YR = (2024,2023,2022)
@@ -272,10 +386,16 @@ if __name__ == "__main__":
                 "POLESTAR", "PORSCHE", "RENAULT", "SEAT", "SKODA", "SMART",
                 "SSANGYONG", "SUBARU", "SUZUKI", "TESLA", "TOYOTA", "VOLKSWAGEN",
                 "VOLVO"]
+    
+    df = pd.DataFrame({'Year':[],'Month':[],'Make':[],'Engine':[],
+                       'Model':[],'Segment':[],'Body':[],
+                       'Transmission':[],'County':[],'Quantity':[]})
+
     for i in YR:
         for n in MTH:
             for z in car_make:
                 for x in ENGINE:
-                    scrape_site(url, driver, i, n, z, x)
+                    scrape_site(url, driver, df, i, n, z, x)
+                    count = count+1
                     sleep (2)
 
