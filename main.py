@@ -19,7 +19,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
 import string
-#from csv import writer
 import csv
 import pandas as pd
 
@@ -37,7 +36,7 @@ def drop_down_menu (url, driver):
     #----------------------driver = webdriver.Chrome(service=ser,options=chrome_options)------------------------
     driver.get(url)
     sleep(1)
-    print(driver.title)
+    #print(driver.title)
 
     #access drop down filter menu
     #--------------------------------find & click on drowp down menu-----------------------------
@@ -51,6 +50,13 @@ def drop_down_menu (url, driver):
     #----------------------find & click on vehicle menu----------------------------------------------
     veh_filter = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/a')
     veh_filter.click()
+
+def reset_body(driver):
+    #find & select make
+    body_element = driver.find_element(By.XPATH,'//*[@id="app"]/div[4]/div[2]/div/div[1]/div[3]/div[2]/div[3]/div/div[2]/input')
+    body_element.send_keys(Keys.BACK_SPACE)
+    sleep(1)
+    body_element.send_keys(Keys.ESCAPE) 
 
 def enter_yr_mth(driver,YR,MTH):
     #find & click on year
@@ -242,6 +248,7 @@ def get_quant(driver):
 
 def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
     drop_down_menu(url, driver)
+    reset_body(driver)
     enter_yr_mth(driver,YR,MTH)
     enter_make(driver, car_make)
     enter_engine(driver,engine)
@@ -252,6 +259,7 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
     if car_models != [] :
         for n in car_models:
             drop_down_menu(url, driver)
+            reset_body(driver)
             enter_make(driver, car_make)
             enter_engine(driver,engine)
             enter_model(driver,n)
@@ -335,7 +343,7 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
                         quant = get_quant(driver)
                         for z in range(0, len(car_county)):
                             List = [YR, MTH, car_make, engine, n, car_seg,car_bodies[0],
-                                    transmission[x], car_county[z], quant[z]]
+                                    x, car_county[z], quant[z]]
                             thedict["Year"].append(List[0])
                             thedict["Month"].append(List[1])
                             thedict["Make"].append(List[2])
@@ -372,7 +380,7 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
                         thedict["County"].append(List[8])
                         thedict["Quantity"].append(List[9])
 
-        print(thedict)
+            drop_down_menu(url,driver)
 
     if thedict["Year"] != []:
         filename = "EVDATA.csv"
@@ -381,13 +389,12 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
                     "County", "Quantity"]
         # write to  csv file
         with open (filename, 'w') as csvfile:
-            #writer = csv.DictWriter(csvfile, fieldnames=field_names)
-            
+           
             writer = csv.writer(csvfile)
             key_list = list(thedict.keys())
             limit = len(thedict['Year'])
-            #writer.writerows(thedict.keys())
-            writer.writeheader()
+            writer.writerows(key_list)
+
             for z in range(len(thedict['Year'])):
                 writer.writerow([thedict[x][z] for x in key_list])
 
