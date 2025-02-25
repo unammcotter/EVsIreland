@@ -240,10 +240,7 @@ def get_quant(driver):
     return qcounty
 
 
-
-
 def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
-    #List = []
     drop_down_menu(url, driver)
     enter_yr_mth(driver,YR,MTH)
     enter_make(driver, car_make)
@@ -274,12 +271,40 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
                             drop_down_menu(url, driver)
                             enter_transmission(driver,x)
                             click_filter_button(driver)
+
+                            car_seg = get_seg(driver)
+                            if len(car_seg) > 1:
+                                car_seg = len(car_seg)
+                            else:
+                                car_seg = car_seg[0]
+
+                            car_county = get_county(driver)
+                            quant = get_quant(driver)
+                            for z in range(0, len(car_county)):
+                                List = [YR, MTH, car_make, engine, n, car_seg,i,
+                                        x, car_county[z], quant[z]]
+                                thedict["Year"].append(List[0])
+                                thedict["Month"].append(List[1])
+                                thedict["Make"].append(List[2])
+                                thedict["Engine"].append(List[3])
+                                thedict["Model"].append(List[4])
+                                thedict["Segment"].append(List[5])
+                                thedict["Body"].append(List[6])
+                                thedict["Transmission"].append(List[7])
+                                thedict["County"].append(List[8])
+                                thedict["Quantity"].append(List[9])
+                                
                     elif len(transmission) == 1:
                         car_seg = get_seg(driver)
+                        if len(car_seg) > 1:
+                            car_seg = len(car_seg)
+                        else:
+                            car_seg = car_seg[0]
+
                         car_county = get_county(driver)
                         quant = get_quant(driver)
                         for z in range(0, len(car_county)):
-                            List = [YR, MTH, car_make, engine, n, car_seg[0],i,
+                            List = [YR, MTH, car_make, engine, n, car_seg,i,
                                     transmission[0], car_county[z], quant[z]]
                             thedict["Year"].append(List[0])
                             thedict["Month"].append(List[1])
@@ -292,27 +317,62 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
                             thedict["County"].append(List[8])
                             thedict["Quantity"].append(List[9])
                             
-
             elif len(car_bodies) == 1:  
                 transmission = get_transmission(driver)
-                car_seg = get_seg(driver)
-                car_county = get_county(driver)
-                quant = get_quant(driver)
-                for z in range(0, len(car_county)):
-                    List = [YR, MTH, car_make, engine, n, car_seg[0], car_bodies[0],
-                        transmission[0], car_county[z], quant[z]]
-                    thedict["Year"].append(List[0])
-                    thedict["Month"].append(List[1])
-                    thedict["Make"].append(List[2])
-                    thedict["Engine"].append(List[3])
-                    thedict["Model"].append(List[4])
-                    thedict["Segment"].append(List[5])
-                    thedict["Body"].append(List[6])
-                    thedict["Transmission"].append(List[7])
-                    thedict["County"].append(List[8])
-                    thedict["Quantity"].append(List[9])
+                if len(transmission) > 1:
+                    for x in transmission:
+                        drop_down_menu(url, driver)
+                        enter_transmission(driver,x)
+                        click_filter_button(driver)
 
-            print(thedict)
+                        car_seg = get_seg(driver)
+                        if len(car_seg) > 1:
+                            car_seg = len(car_seg)
+                        else:
+                            car_seg = car_seg[0]
+
+                        car_county = get_county(driver)
+                        quant = get_quant(driver)
+                        for z in range(0, len(car_county)):
+                            List = [YR, MTH, car_make, engine, n, car_seg,car_bodies[0],
+                                    transmission[x], car_county[z], quant[z]]
+                            thedict["Year"].append(List[0])
+                            thedict["Month"].append(List[1])
+                            thedict["Make"].append(List[2])
+                            thedict["Engine"].append(List[3])
+                            thedict["Model"].append(List[4])
+                            thedict["Segment"].append(List[5])
+                            thedict["Body"].append(List[6])
+                            thedict["Transmission"].append(List[7])
+                            thedict["County"].append(List[8])
+                            thedict["Quantity"].append(List[9])
+                            
+                elif len(transmission) == 1:
+                    car_seg = get_seg(driver)
+                    if len(car_seg) > 1:
+                        car_seg = len(car_seg)
+                    else:
+                        car_seg = car_seg[0]
+
+                    car_county = get_county(driver)
+                    quant = get_quant(driver)
+
+                    for z in range(0, len(car_county)):
+                        List = [YR, MTH, car_make, engine, n, car_seg, car_bodies[0],
+                            transmission[0], car_county[z], quant[z]]
+                        
+                        thedict["Year"].append(List[0])
+                        thedict["Month"].append(List[1])
+                        thedict["Make"].append(List[2])
+                        thedict["Engine"].append(List[3])
+                        thedict["Model"].append(List[4])
+                        thedict["Segment"].append(List[5])
+                        thedict["Body"].append(List[6])
+                        thedict["Transmission"].append(List[7])
+                        thedict["County"].append(List[8])
+                        thedict["Quantity"].append(List[9])
+
+        print(thedict)
 
     if thedict["Year"] != []:
         filename = "EVDATA.csv"
@@ -331,61 +391,7 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
             for z in range(len(thedict['Year'])):
                 writer.writerow([thedict[x][z] for x in key_list])
 
-    # initializing the titles and rows list
-    #fields = []
-   # rows = []
-    
-    # List that we want to add as a new row
-    #List = [6, 'William', 5532, 1, 'UAE']
-    
-    # Open our existing CSV file in append mode
-    # Create a file object for this file
-    # if List != []:
-    #     with open(filename, 'a') as f_object:
-        
-    #         # Pass this file object to csv.writer()
-    #         # and get a writer object
-    #         writer_object = writer(f_object)
-        
-    #         # Pass the list as an argument into
-    #         # the writerow()
-    #         writer_object.writerow(List)
-        
-    #         # Close the file object
-    #         f_object.close()
-
-    # # Open the CSV file for reading
-    # with open(filename, mode='r') as file:
-    #     # Create a CSV reader with DictReader
-    #     csv_reader = csv.DictReader(file)
-
-    #     # Initialize an empty list to store the dictionaries
-    #     data_list = []
-    #     # Iterate through each row in the CSV file
-    #     for row in csv_reader:
-    #         # Append each row (as a dictionary) to the list
-    #         data_list.append(row)
-
-    # # Print the list of dictionaries
-    # for data in data_list:
-    #     print(data)
-    
-
    
-    # # printing the field names
-    # print('Field names are:' + ', '.join(field for field in fields))
-
-    # # printing first 5 rows
-    # print('\nFirst 5 rows are:\n')
-    # for row in rows[:5]:
-    #     # parsing each column of a row
-    #     for col in row:
-    #         print("%10s" % col, end=" "),
-    #     print('\n')
-
-
-
-
 
 if __name__ == "__main__":
     url = "https://stats.beepbeep.ie/"
@@ -397,8 +403,6 @@ if __name__ == "__main__":
 
     MTH = ["January", "February", "March", "April", "May", "June", "July",
             "August", "September", "October", "November", "December"]
-
-    #MTHnum = arr.array('i',[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
     ENGINE = ["electric", "diesel electric (hybrid)", "diesel/plug-in electric hybrid",
             "petrol electric (hybrid)", "petrol/plug-in electric hybrid"]
@@ -414,7 +418,6 @@ if __name__ == "__main__":
     thedict = {"Year": [], "Month":[], "Make":[], "Model":[],
             "Segment":[], "Body":[], "Engine":[], "Transmission":[],
             "County":[], "Quantity":[]}
-    #df = pd.read_csv('EVDATA.csv') 
    
     for i in YR:
         for n in MTH:
