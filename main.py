@@ -19,7 +19,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import array as arr
 import string
-from csv import writer
+#from csv import writer
+import csv
 import pandas as pd
 
 def driver_setup():
@@ -136,8 +137,8 @@ def get_models(driver):
 
 def get_seg(driver):
     seg_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr')
-    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr'))
-    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr[1]/td'))
     print(rows) 
     print(cols)
 
@@ -146,8 +147,8 @@ def get_seg(driver):
     if rows != 0:
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
-            seg[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-segment"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
-            seg[r-1] = seg[r-1].lower()
+            seg[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(3)+']').text
+            #seg[r-1] = seg[r-1].lower()
     
     return seg
 
@@ -207,9 +208,9 @@ def enter_transmission(driver,car_transmission):
     transmission_element.send_keys(Keys.ESCAPE) 
 
 def get_county(driver):
-    county_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr')
-    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]'))
-    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    county_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr[1]/td'))
     print(rows) 
     print(cols)
 
@@ -218,14 +219,14 @@ def get_county(driver):
     if rows != 0:
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
-            county[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            county[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
 
     return county
 
 def get_quant(driver):
-    county_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr')
-    rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]'))
-    cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr[1]/td'))
+    qcounty_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr')
+    rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr'))
+    cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr[1]/td'))
     print(rows) 
     print(cols)
 
@@ -234,13 +235,15 @@ def get_quant(driver):
     if rows != 0:
         for r in range(1, rows+1): 
             # obtaining the text from each column of the table 
-            qcounty[r-1] = driver.find_element(By.XPATH, '//*[@id="sales-by-county"]/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(2)+']').text
+            qcounty[r-1] = driver.find_element(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr['+str(r)+']/td['+str(3)+']').text
 
     return qcounty
 
 
-def scrape_site (url, driver, df, YR, MTH, car_make, engine):
-    
+
+
+def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
+    #List = []
     drop_down_menu(url, driver)
     enter_yr_mth(driver,YR,MTH)
     enter_make(driver, car_make)
@@ -251,7 +254,6 @@ def scrape_site (url, driver, df, YR, MTH, car_make, engine):
 
     if car_models != [] :
         for n in car_models:
-
             drop_down_menu(url, driver)
             enter_make(driver, car_make)
             enter_engine(driver,engine)
@@ -276,46 +278,81 @@ def scrape_site (url, driver, df, YR, MTH, car_make, engine):
                         car_seg = get_seg(driver)
                         car_county = get_county(driver)
                         quant = get_quant(driver)
-                        for i in car_county:
-                            List = [YR, MTH, car_make, engine, n, car_seg, car_bodies,
-                                transmission, i, quant]
-                            df.loc[len(df)] = List
+                        for z in range(0, len(car_county)):
+                            List = [YR, MTH, car_make, engine, n, car_seg[0],i,
+                                    transmission[0], car_county[z], quant[z]]
+                            thedict["Year"].append(List[0])
+                            thedict["Month"].append(List[1])
+                            thedict["Make"].append(List[2])
+                            thedict["Engine"].append(List[3])
+                            thedict["Model"].append(List[4])
+                            thedict["Segment"].append(List[5])
+                            thedict["Body"].append(List[6])
+                            thedict["Transmission"].append(List[7])
+                            thedict["County"].append(List[8])
+                            thedict["Quantity"].append(List[9])
+                            
 
             elif len(car_bodies) == 1:  
                 transmission = get_transmission(driver)
                 car_seg = get_seg(driver)
                 car_county = get_county(driver)
                 quant = get_quant(driver)
-                for i in car_county:
-                    List = [YR, MTH, car_make, engine, n, car_seg, car_bodies,
-                        transmission, i, quant]
-                    df.loc[len(df)] = List   
+                for z in range(0, len(car_county)):
+                    List = [YR, MTH, car_make, engine, n, car_seg[0], car_bodies[0],
+                        transmission[0], car_county[z], quant[z]]
+                    thedict["Year"].append(List[0])
+                    thedict["Month"].append(List[1])
+                    thedict["Make"].append(List[2])
+                    thedict["Engine"].append(List[3])
+                    thedict["Model"].append(List[4])
+                    thedict["Segment"].append(List[5])
+                    thedict["Body"].append(List[6])
+                    thedict["Transmission"].append(List[7])
+                    thedict["County"].append(List[8])
+                    thedict["Quantity"].append(List[9])
+
+            print(thedict)
+
+    if thedict["Year"] != []:
+        filename = "EVDATA.csv"
+        field_names = ["Year", "Month", "Make", "Model",
+                    "Segment", "Body", "Engine", "Transmission",
+                    "County", "Quantity"]
+        # write to  csv file
+        with open (filename, 'w') as csvfile:
+            #writer = csv.DictWriter(csvfile, fieldnames=field_names)
+            
+            writer = csv.writer(csvfile)
+            key_list = list(thedict.keys())
+            limit = len(thedict['Year'])
+            #writer.writerows(thedict.keys())
+            writer.writeheader()
+            for z in range(len(thedict['Year'])):
+                writer.writerow([thedict[x][z] for x in key_list])
 
     # initializing the titles and rows list
-    fields = []
-    rows = []
-
-    filename = "EVDATA.csv"
+    #fields = []
+   # rows = []
+    
     # List that we want to add as a new row
-    List = [6, 'William', 5532, 1, 'UAE']
+    #List = [6, 'William', 5532, 1, 'UAE']
     
     # Open our existing CSV file in append mode
     # Create a file object for this file
-    with open('event.csv', 'a') as f_object:
-    
-        # Pass this file object to csv.writer()
-        # and get a writer object
-        writer_object = writer(f_object)
-    
-        # Pass the list as an argument into
-        # the writerow()
-        writer_object.writerow(List)
-    
-        # Close the file object
-        f_object.close()
-
-
-
+    # if List != []:
+    #     with open(filename, 'a') as f_object:
+        
+    #         # Pass this file object to csv.writer()
+    #         # and get a writer object
+    #         writer_object = writer(f_object)
+        
+    #         # Pass the list as an argument into
+    #         # the writerow()
+    #         writer_object.writerow(List)
+        
+    #         # Close the file object
+    #         f_object.close()
 
     # # Open the CSV file for reading
     # with open(filename, mode='r') as file:
@@ -332,21 +369,8 @@ def scrape_site (url, driver, df, YR, MTH, car_make, engine):
     # # Print the list of dictionaries
     # for data in data_list:
     #     print(data)
+    
 
-    # # reading csv file
-    # with open (filename, 'r') as csvfile:
-    #     # creating a csv reader object
-    #     csvreader = csv.reader(csvfile)
-
-    #     # extracting field names through first row
-    #     fields = next(csvreader)
-        
-    #     # extracting each data row one by one
-    #     for row in csvreader:
-    #         rows.append(row)
-
-    #     # get total number of rows
-    #     print("Total no. of rows: %d" % (csvreader.line_num))
    
     # # printing the field names
     # print('Field names are:' + ', '.join(field for field in fields))
@@ -387,15 +411,16 @@ if __name__ == "__main__":
                 "SSANGYONG", "SUBARU", "SUZUKI", "TESLA", "TOYOTA", "VOLKSWAGEN",
                 "VOLVO"]
     
-    df = pd.DataFrame({'Year':[],'Month':[],'Make':[],'Engine':[],
-                       'Model':[],'Segment':[],'Body':[],
-                       'Transmission':[],'County':[],'Quantity':[]})
-
+    thedict = {"Year": [], "Month":[], "Make":[], "Model":[],
+            "Segment":[], "Body":[], "Engine":[], "Transmission":[],
+            "County":[], "Quantity":[]}
+    #df = pd.read_csv('EVDATA.csv') 
+   
     for i in YR:
         for n in MTH:
             for z in car_make:
                 for x in ENGINE:
-                    scrape_site(url, driver, df, i, n, z, x)
+                    scrape_site(url, driver, thedict, i, n, z, x)
                     count = count+1
                     sleep (2)
 

@@ -1,1 +1,16 @@
-Year,Month,Make,Model,Segment,Body,Engine,Transmission,County,Quantity
+Y,e,a,r
+M,o,n,t,h
+M,a,k,e
+M,o,d,e,l
+S,e,g,m,e,n,t
+B,o,d,y
+E,n,g,i,n,e
+T,r,a,n,s,m,i,s,s,i,o,n
+C,o,u,n,t,y
+Q,u,a,n,t,i,t,y
+2024,January,ALFA ROMEO,giulia,Medium Prestige (D2),Saloon,petrol electric (hybrid),automatic,Clare,1
+2024,January,ALFA ROMEO,giulia,Medium Prestige (D2),Saloon,petrol electric (hybrid),automatic,Dublin,3
+2024,January,ALFA ROMEO,giulia,Medium Prestige (D2),Saloon,petrol electric (hybrid),automatic,Tipperary,1
+2024,January,ALFA ROMEO,tonale,Medium SUV (D3),MPV,petrol/plug-in electric hybrid,automatic,Cork,1
+2024,January,ALFA ROMEO,tonale,Medium SUV (D3),MPV,petrol/plug-in electric hybrid,automatic,Clare,1
+2024,January,ALFA ROMEO,tonale,Medium SUV (D3),MPV,petrol/plug-in electric hybrid,automatic,Dublin,8
