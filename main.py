@@ -128,8 +128,8 @@ def get_models(driver):
     car_model_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[5]/div/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[5]/div/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-model"]/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols) 
+    #print(rows) 
+    #print(cols) 
 
     car_models = [None] * rows
 
@@ -145,8 +145,8 @@ def get_seg(driver):
     seg_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[6]/div/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols)
+    # print(rows) 
+    # print(cols)
 
     seg = [None] * rows
 
@@ -162,8 +162,8 @@ def get_body(driver):
     body_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-body-type"]/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols)
+    # print(rows) 
+    # print(cols)
 
     body= [None] * rows
 
@@ -190,8 +190,8 @@ def get_transmission(driver):
     transmission_element = driver.find_elements(By.XPATH,'//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '//*[@id="sales-by-transmission"]/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols)
+    # print(rows) 
+    # print(cols)
 
     transmission = [None] * rows
 
@@ -217,8 +217,8 @@ def get_county(driver):
     county_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols)
+    # print(rows) 
+    # print(cols)
 
     county = [None] * rows
 
@@ -233,8 +233,8 @@ def get_quant(driver):
     qcounty_element = driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr')
     rows = len(driver.find_elements(By.XPATH,'/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr'))
     cols = len(driver.find_elements(By.XPATH, '/html/body/div/div[3]/div/div[2]/div[11]/div/div[2]/div/div/table/tbody/tr[1]/td'))
-    print(rows) 
-    print(cols)
+    # print(rows) 
+    # print(cols)
 
     qcounty = [None] * rows
 
