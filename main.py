@@ -1,10 +1,8 @@
-#Created 30/01/2025
+#Created 31/01/2025
 #Author Úna Cotter
-#Scapper File test area
-#To do:
-#Change variable to hnadle table
-#need to erase alfero and replace with audi
-#save table as an excel file
+#Scapper for scappoingdata from stats.beepbeep.ie
+
+#Created 30/01/2025
 
 import requests
 from bs4 import BeautifulSoup
@@ -383,7 +381,7 @@ def scrape_site (url, driver, thedict, YR, MTH, car_make, engine):
             drop_down_menu(url,driver)
 
     if thedict["Year"] != []:
-        filename = "EVDATA.csv"
+        filename = "EVDATASepMerDE.csv"
         field_names = ["Year", "Month", "Make", "Model",
                     "Segment", "Body", "Engine", "Transmission",
                     "County", "Quantity"]
@@ -405,32 +403,47 @@ if __name__ == "__main__":
     driver = driver_setup()
     count = 0
 
-    YR = (2024,2023)
+    YR = 2024
     #YR = (2024,2023,2022)
 
-    MTH = ["January", "February", "March", "April", "May", "June", "July",
-            "August", "September", "October", "November", "December"]
+    MTH = "September"
+    #         "August", "September", "October", "November", "December"]
+    # MTH = ["January", "February", "March", "April", "May", "June", "July",
+    #         "August", "September", "October", "November", "December"]
 
-    ENGINE = ["electric", "diesel electric (hybrid)", "diesel/plug-in electric hybrid",
-            "petrol electric (hybrid)", "petrol/plug-in electric hybrid"]
+    #ENGINE = ["electric"]
+    ENGINE = "diesel electric (hybrid)"
+    #ENGINE = ["diesel/plug-in electric hybrid"]
+    #ENGINE = ["petrol electric (hybrid)"]
+    #ENGINE = ["petrol/plug-in electric hybrid"]
 
-    car_make = ["ALFA ROMEO", "AUDI", "BENTLEY", "BMW", "BYD", "CITROEN", "CUPRA",
-                "DACIA", "DS", "FERRARI", "FIAT", "FORD", "GWM", "HONDA", "HYUNDAI",
-                "JAGUAR", "JEEP", "KIA", "LAND ROVE", "LEXUS", "LOTUS", "MAXUS",
-                "MAZDA", "MERCEDES-BENZ", "MG", "MINI", "NISSAN", "OPEL", "PEUGEOT",
-                "POLESTAR", "PORSCHE", "RENAULT", "SEAT", "SKODA", "SMART",
-                "SSANGYONG", "SUBARU", "SUZUKI", "TESLA", "TOYOTA", "VOLKSWAGEN",
-                "VOLVO"]
+
+    car_make = "MERCEDES-BENZ"
+    # car_make = ["AUDI","BENTLEY", "BMW", "BYD", "CITROEN", "CUPRA",
+    #             "DACIA", "DS", "FERRARI", "FIAT", "FORD", "GWM", "HONDA", "HYUNDAI",
+    #             "JAGUAR", "JEEP", "KIA", "LAND ROVE", "LEXUS", "LOTUS", "MAXUS",
+    #             "MAZDA", "MERCEDES-BENZ", "MG", "MINI", "NISSAN", "OPEL", "PEUGEOT",
+    #             "POLESTAR", "PORSCHE", "RENAULT", "SEAT", "SKODA", "SMART",
+    #             "SSANGYONG", "SUBARU", "SUZUKI", "TESLA", "TOYOTA", "VOLKSWAGEN",
+    #             "VOLVO"]
     
     thedict = {"Year": [], "Month":[], "Make":[], "Model":[],
             "Segment":[], "Body":[], "Engine":[], "Transmission":[],
             "County":[], "Quantity":[]}
    
-    for i in YR:
-        for n in MTH:
-            for z in car_make:
-                for x in ENGINE:
-                    scrape_site(url, driver, thedict, i, n, z, x)
-                    count = count+1
-                    sleep (2)
+    # for i in YR:
+    #     for n in MTH:
+    #         for z in car_make:
+    #             for x in ENGINE:
+    #                 scrape_site(url, driver, thedict, i, n, z, x)
+    #                 count = count+1
+    #                 sleep (2)
 
+    scrape_site(url, driver, thedict, YR, MTH, car_make, ENGINE)
+    sleep (2)
+
+response = requests.get("https://stats.beepbeep.ie/")
+if response.status_code == 200:
+    print("Website Accessed Successfully.")
+else:
+    print("Issue Accessing Website")
