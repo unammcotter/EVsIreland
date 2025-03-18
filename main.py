@@ -3,54 +3,58 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from warnings import filterwarnings
 
+
 dataframe1 = pd.read_csv('evdata Table V2.6.csv')
-dataframe2 = dataframe1.dropna()
+dataframe2 = dataframe1
+res = list(dataframe2.columns)
 
-#x = dataframe2['Month']
-#y = dataframe2['Quantity']
 mths =  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-print (mths)
-dfgraph1 = pd.DataFrame({'MTH': mths})
-dfgraph1['Total'] = 0
-for n in dfgraph1['MTH']:
-    totsum = dataframe2.loc[dataframe2['Month']== n, 'Quantity'].sum()
-    dfgraph1.loc[dfgraph1['MTH'] == n, 'Total'] = totsum
+for z in res:
+    if z == 'Quantity' or z == 'Unnamed: 10' :
+        continue
 
-print(dfgraph1)
+    col = dataframe2[z].unique()
+    dfgraph0 = pd.DataFrame({'MTH': mths})
+    for i in col:
+        dfgraph0[i] =0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+        for n in dfgraph0['MTH']:
+            totsum = dataframe2.loc[(dataframe2['Month']== n) & (dataframe2[z] == i ), 'Quantity'].sum()
+            dfgraph0.loc[dfgraph0['MTH'] == n, i] = totsum
+    
+    dfgraph0.to_csv(z + "EVdf.csv")
 
+counties = dataframe2['County'].unique()
 engines = dataframe2['Engine'].unique()
-print (engines)
-dfgraph2 = pd.DataFrame({'MTH': mths})
-for i in engines:
-    dfgraph2[i] = 0
-   
-    for n in dfgraph2['MTH']:
-        totsum = dataframe2.loc[(dataframe2['Month']== n) & (dataframe2['Engine'] == i ), 'Quantity'].sum()
-        dfgraph2.loc[dfgraph1['MTH'] == n, i] = totsum
+dfgraph1 = pd.DataFrame({'County':counties})
+for x in engines:
+    dfgraph1[x] = 0
+    for n in dfgraph1['County']:
+        sumToT = dataframe2.loc[(dataframe2['County']== n) & (dataframe2['Engine'] == x), 'Quantity'].sum()
+        dfgraph1.loc[dfgraph1['County'] == n, x] = sumToT
 
-print(dfgraph2)
+dfgraph1.to_csv("CountyEngineEVdf.csv")
 
-# plt.plot(x,y)
-# plt.xlabel('Month')
-# plt.ylabel('Number of regisetered cars')
-# plt.title('New Restrations of Eletric and Hybrid Cars')
-# plt.draw()
-# plt.show()
+dfgraph2 = pd.read_csv("SegmentEVdf.csv")
+colms = list(dfgraph2.columns)
+print(colms)
 
-#mths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-# plt.bar(x,y, width = 0.5)
+x = mths
+for n in range(2, len(colms)):
+    y = dfgraph2[colms[n]]
+    plt.plot(x,y,label = colms[n])
 
-# plt.xlabel('Month')
-# plt.ylabel('Number of regisetered cars')
-# plt.title('New Restrations of Eletric and Hybrid Cars')
-# #plt.draw()
-# plt.show()
+# naming the x axis
+plt.xlabel('x - axis')
+# naming the y axis
+plt.ylabel('y - axis')
+# giving a title to my graph
+plt.title('T')
 
-#dataframe3 = dataframe2[['Month','Quantity']]
-#dataframe3.plot(kind='bar')
-#dataframe3['Month'].value_counts().plot(kind ='bar',xlabel='Month',ylabel='Count', rot=0)
+# show a legend on the plot
+plt.legend()
+
+# function to show the plot
+plt.show()
+
+
 print('DONE')
-#dataframe3 = sns.load_dataset('evdata Table V2.6.csv')
-#dataframe3.head()
-
-#print(x,y)
