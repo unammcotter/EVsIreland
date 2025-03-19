@@ -65,38 +65,50 @@ from warnings import filterwarnings
 # plt.show()
 # plt.savefig('EV segment types by month.png')
 
-dfgraph3 = pd.read_csv('EngineCountyEVdf.csv')
-dfgraph3 = dfgraph3.drop('Unnamed: 0', axis = 1)
-# dfgraph3.plot.bar()
-# plt.xticks(np.arange(len(dfgraph3['County'])),dfgraph3['County'] )
-# #naming the x axis
-# plt.xlabel('County')
-# # naming the y axis
-# plt.ylabel('No. of cars')
-# # giving a title to my graph
-# plt.title('EV Engine types by County')
-# # show a legend on the plot
-# plt.legend()
-# # function to show the plot
-# plt.show()
+dfgraph3 = pd.read_csv('MakeCountyEVdf.csv')
+dfgraph3 = dfgraph3.drop(['Unnamed: 0','Unnamed: 42'], axis = 1)
+#dfgraph3 = dfgraph3.drop(['Unnamed: 0'], axis = 1)
+dfgraph4 = pd.read_excel('CensusPopData2022.xlsx')
+for n in dfgraph3['County']:    
+    for x in list(dfgraph3.columns):
+        if x == 'County':
+            continue
 
+        diff = dfgraph4.loc[(dfgraph4['County']== n), 'Pop10'].sum()
+        deno = dfgraph3.loc[(dfgraph3['County']==n),x].sum()
+        ans = deno/diff
+        dfgraph3.loc[(dfgraph3['County']==n),x] = ans
 
-dfgraph5 = dfgraph3.drop(['petrol electric (hybrid)','diesel electric (hybrid)','electric', 'diesel/plug-in electric hybrid'],axis=1)
-dfgraph5.plot.bar()
-plt.xticks(np.arange(len(dfgraph5['County'])),dfgraph5['County'] )
-dfgraph4 = pd.read_csv('PriceEngineCounty.csv')
-dfgraph4.plot.line()
-
+dfgraph3.plot.bar()
+plt.xticks(np.arange(len(dfgraph3['County'])),dfgraph3['County'] )
 #naming the x axis
 plt.xlabel('County')
 # naming the y axis
-plt.ylabel('Price in Euro')
+plt.ylabel('No. of cars per 10,000 pop.')
 # giving a title to my graph
-plt.title('EV Price by Engine & County')
+plt.title('EV Car Makes by County 2024')
 # show a legend on the plot
 plt.legend()
 # function to show the plot
 plt.show()
+
+
+# dfgraph5 = dfgraph3.drop(['petrol electric (hybrid)','diesel electric (hybrid)','electric', 'diesel/plug-in electric hybrid'],axis=1)
+# dfgraph5.plot.bar()
+# plt.xticks(np.arange(len(dfgraph5['County'])),dfgraph5['County'] )
+# dfgraph4 = pd.read_csv('PriceEngineCounty.csv')
+# dfgraph4.plot.line()
+
+# #naming the x axis
+# plt.xlabel('County')
+# # naming the y axis
+# plt.ylabel('Price in Euro')
+# # giving a title to my graph
+# plt.title('EV Price by Engine & County')
+# # show a legend on the plot
+# plt.legend()
+# # function to show the plot
+# plt.show()
 
 
 print('DONE')
