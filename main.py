@@ -4,111 +4,92 @@ import seaborn as sns
 import numpy as np
 from warnings import filterwarnings
 
+#----------------------------Car ownership vs Reg cars
+df1 = pd.read_csv('AdminCounty2022.csv')
+cl = list(df1.columns)
+print(cl)
+df1 = df1[['County','T15_1_1C','T15_1_2C','T15_1_3C','T15_1_GE4C']]
+df2 = pd.read_csv('CountyCountyEVdf.csv')
 
-# dataframe1 = pd.read_csv('evdata Table V2.7.csv')
-# dataframe2 = dataframe1
-# res = list(dataframe2.columns)
+df1.drop(df1.tail(1).index,
+        inplace = True)
+df2.drop(df2.tail(1).index,
+        inplace = True)
 
-# mths =  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-# for z in res:
-#     if z == 'Quantity' or z == 'Unnamed: 10' :
-#         continue
+df1.insert(1,'Quantity', df2['Quantity'])
 
-#     col = dataframe2[z].unique()
-#     dfgraph0 = pd.DataFrame({'MTH': mths})
-#     for i in col:
-#         dfgraph0[i] =0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
-#         for n in dfgraph0['MTH']:
-#             totsum = dataframe2.loc[(dataframe2['Month']== n) & (dataframe2[z] == i ), 'Quantity'].sum()
-#             dfgraph0.loc[dfgraph0['MTH'] == n, i] = totsum
-    
-#     dfgraph0.to_csv(z + "MonthEVdf.csv")
+x1 = df1['Quantity']
+x2 = df1['Quantity']
+x3 = df1['Quantity']
+x4 = df1['Quantity']
+y1 = df1['T15_1_1C']
+y2 = df1['T15_1_2C']
+y3 = df1['T15_1_3C']
+y4 = df1['T15_1_GE4C']
 
-# counties = dataframe2['County'].unique()
-# for z in res:
-#     if z == 'Quantity' or z == 'Unnamed: 10' :
-#         continue
-#     col = dataframe2[z].unique()
-#     #engines = dataframe2['Engine'].unique()
-#     dfgraph1 = pd.DataFrame({'County':counties})
-#     for x in col:
-#         dfgraph1[x] = 0
-#         for n in dfgraph1['County']:
-#             sumToT = dataframe2.loc[(dataframe2['County']== n) & (dataframe2[z] == x), 'Quantity'].sum()
-#             dfgraph1.loc[dfgraph1['County'] == n, x] = sumToT
-
-#     dfgraph1.to_csv(z + "CountyEVdf.csv")
-
-# dfgraph2 = pd.read_csv("SegmentCountyEVdf.csv")
-# colms = list(dfgraph2.columns)
-# print(colms)
-
-# x = dfgraph2['County']
-# for n in range(2, len(colms)-1):
-#     y = dfgraph2[colms[n]]
-#     if n <= 11:
-#         plt.plot(x,y)
-#     elif n <= 21:
-#         plt.plot(x,y, linestyle = 'dashed')
-#     elif n <=34:
-#         plt.plot(x,y,linestyle = 'dotted')
-
-# #naming the x axis
-# plt.xlabel('Month')
-# # naming the y axis
-# plt.ylabel('No. of cars')
-# # giving a title to my graph
-# plt.title('EV segment types by month')
-# # show a legend on the plot
-# plt.legend(colms[2:28])
-# # function to show the plot
-# plt.show()
-# plt.savefig('EV segment types by month.png')
-
-dfgraph3 = pd.read_csv('MakeCountyEVdf.csv')
-dfgraph3 = dfgraph3.drop(['Unnamed: 0','Unnamed: 42'], axis = 1)
-#dfgraph3 = dfgraph3.drop(['Unnamed: 0'], axis = 1)
-dfgraph4 = pd.read_excel('CensusPopData2022.xlsx')
-for n in dfgraph3['County']:    
-    for x in list(dfgraph3.columns):
-        if x == 'County':
-            continue
-
-        diff = dfgraph4.loc[(dfgraph4['County']== n), 'Pop10'].sum()
-        deno = dfgraph3.loc[(dfgraph3['County']==n),x].sum()
-        ans = deno/diff
-        dfgraph3.loc[(dfgraph3['County']==n),x] = ans
-
-dfgraph3.plot.bar()
-plt.xticks(np.arange(len(dfgraph3['County'])),dfgraph3['County'] )
+plt.scatter(x1,y1)
+plt.scatter(x2,y2)
+plt.scatter(x3,y3)
+plt.scatter(x4,y4)
 #naming the x axis
-plt.xlabel('County')
+plt.xlabel('Number of Registered cars')
 # naming the y axis
-plt.ylabel('No. of cars per 10,000 pop.')
+plt.ylabel('Number of Housholds')
 # giving a title to my graph
-plt.title('EV Car Makes by County 2024')
-# show a legend on the plot
-plt.legend()
-# function to show the plot
+plt.title('Car Ownership vs number of registered EVs & Plugins car')
+#show a legend on the plot
+plt.legend(['1 Car','2 Car', '3 Car', '4+ Cars'])
+#function to show the plot
 plt.show()
 
+df3 = df1[['County','Quantity','T15_1_1C']]
+df3.plot.bar()
+plt.xticks(np.arange(len(df3['County'])),df3['County'] )
+plt.xlabel('County')
+# naming the y axis
+plt.ylabel('Number of registered cars/housholds')
+# giving a title to my graph
+plt.title('Households with 1 Car & Resigtered EV & Plug-in')
+#show a legend on the plot
+plt.legend(['Registered Cars','Households'])
+#function to show the plot
+plt.show()
 
-# dfgraph5 = dfgraph3.drop(['petrol electric (hybrid)','diesel electric (hybrid)','electric', 'diesel/plug-in electric hybrid'],axis=1)
-# dfgraph5.plot.bar()
-# plt.xticks(np.arange(len(dfgraph5['County'])),dfgraph5['County'] )
-# dfgraph4 = pd.read_csv('PriceEngineCounty.csv')
-# dfgraph4.plot.line()
+df3 = df1[['County','Quantity','T15_1_2C']]
+df3.plot.bar()
+plt.xticks(np.arange(len(df3['County'])),df3['County'] )
+plt.xlabel('County')
+# naming the y axis
+plt.ylabel('Number of registered cars/housholds')
+# giving a title to my graph
+plt.title('Households with 2 Cars & Resigtered EV & Plug-in')
+#show a legend on the plot
+plt.legend(['Registered Cars','Households'])
+#function to show the plot
+plt.show()
 
-# #naming the x axis
-# plt.xlabel('County')
-# # naming the y axis
-# plt.ylabel('Price in Euro')
-# # giving a title to my graph
-# plt.title('EV Price by Engine & County')
-# # show a legend on the plot
-# plt.legend()
-# # function to show the plot
-# plt.show()
+df3 = df1[['County','Quantity','T15_1_3C']]
+df3.plot.bar()
+plt.xticks(np.arange(len(df3['County'])),df3['County'] )
+plt.xlabel('County')
+# naming the y axis
+plt.ylabel('Number of registered cars/housholds')
+# giving a title to my graph
+plt.title('Households with 3 Cars & Resigtered EV & Plug-in')
+#show a legend on the plot
+plt.legend(['Registered Cars','Households'])
+#function to show the plot
+plt.show()
 
-
-print('DONE')
+df3 = df1[['County','Quantity','T15_1_GE4C']]
+df3.plot.bar()
+plt.xticks(np.arange(len(df3['County'])),df3['County'] )
+plt.xlabel('County')
+# naming the y axis
+plt.ylabel('Number of registered cars/housholds')
+# giving a title to my graph
+plt.title('Households with 4+ Cars & Resigtered EV & Plug-in')
+#show a legend on the plot
+plt.legend(['Registered Cars','Households'])
+#function to show the plot
+plt.show()
