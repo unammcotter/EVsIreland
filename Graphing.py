@@ -5,6 +5,99 @@ import numpy as np
 from warnings import filterwarnings
 
 
+#SIMPLE STATS NOT NORMALISED
+dfCensus = pd.read_csv("Census2022V2.0.csv")
+dfCensus = dfCensus[['County',
+ #Table 1: Population aged 18+ by sex
+                     'Total_Males_18plus', 'Total_Females_18plus',
+
+ #Table 1: Population aged 18 - 19 by sex and year of age, persons aged 20 years and over by sex and age group
+                     'T1_1AGE18T','T1_1AGE19T','T1_1AGE20_24T','T1_1AGE25_29T',
+                     'T1_1AGE30_34T','T1_1AGE35_39T','T1_1AGE40_44T','T1_1AGE45_49T',
+                     'T1_1AGE50_54T','T1_1AGE55_59T','T1_1AGE60_64T','T1_1AGE65_69T',
+                     'T1_1AGE70_74T','T1_1AGE75_79T','T1_1AGE80_84T','T1_1AGEGE_85T',
+ 
+ #Table 1: Private households by type of accommodation                     
+                     'T6_1_HB_H','T6_1_FA_H','T6_1_BS_H','T6_1_CM_H',
+
+ #Table 3: Permanent private households by type of occupancy                     
+                     'T6_3_RPLH','T6_3_RLAH','T6_3_RVCHBH','T6_3_OFRH',
+
+ #Table 10: Permanent private households by number of renewables                    
+                     'T6_10_RE',
+ 
+ #Table 4: Population aged 15 years and over by sex and highest level of education completed        
+                     'T10_4_TVT','T10_4_ACCAT','T10_4_HCT','T10_4_ODNDT','T10_4_HDPQT',
+                     'T10_4_PDT','T10_4_DT',
+
+ #Table 2: Persons in private households by socio-economic group of reference person
+                     'T9_2_HA','T9_2_HB','T9_2_HC','T9_2_HD','T9_2_HE','T9_2_HF',
+                     'T9_2_HG','T9_2_HH','T9_2_HI','T9_2_HJ','T9_2_HZ',
+
+ #Table 1: Population aged 5 years and over by means of travel to work, school or college
+                     'T11_1_FW','T11_1_BIW','T11_1_BUW','T11_1_TDLW','T11_1_MW',
+                     'T11_1_CDW','T11_1_CPW','T11_1_VW','T11_1_OTHW','T11_1_WMFHW',
+                     'T11_1_NSW','T11_1_FT','T11_1_BIT','T11_1_BUT','T11_1_TDLT',
+                     'T11_1_CDT',
+                
+ #Table 1: Number of households with cars
+                     'T15_1_NC','T15_1_1C','T15_1_2C','T15_1_3C','T15_1_GE4C']]
+
+plus2_car_cols = ['T15_1_2C','T15_1_3C','T15_1_GE4C']
+activeT = ['T11_1_FT','T11_1_BIT']
+pT = ['T11_1_BUT','T11_1_TDLT']
+
+dfCensus['T15_1_2C+'] = dfCensus[plus2_car_cols].sum(axis=1)
+dfCensus['T11_1_ACT'] = dfCensus[activeT].sum(axis=1)
+dfCensus['T11_1_PUT'] = dfCensus[pT].sum(axis=1)
+
+dfCensus2 = dfCensus.drop(columns=plus2_car_cols)
+dfCensus2 = dfCensus2.drop(columns=activeT)
+dfCensus2 = dfCensus2.drop(columns=pT)
+dfCensus2 = dfCensus2.drop(columns='County')
+
+dfBEVs = pd.read_csv("Combined_CountyEVdf.csv")
+dfCensus2['Total BEVs'] =  dfBEVs[['2024']]
+dfCensus2.drop(dfCensus.tail(1).index,
+        inplace = True)
+
+# Summary statistics
+summary = dfCensus2.describe().T[['mean', '50%', 'std']]  # 50% = median
+summary.rename(columns={'50%': 'median'}, inplace=True)
+print(summary)
+
+# Select only numeric columns
+all_columns = dfCensus2.columns
+
+# Compute correlations
+correlation_matrix = dfCensus2[all_columns].corr()
+
+# Show correlation of age groups with 'No. Cars'
+print(correlation_matrix['Total BEVs'].sort_values(ascending=False))
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap="coolwarm")
+plt.title("Correlation Matrix of Census Data Groups and BEV Registration")
+plt.show()
+
+# Create scatterplots for each age group
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+for col in all_columns:
+    plt.figure(figsize=(6, 4))
+    sns.scatterplot(x=dfCensus2[col], y=dfCensus2['Total BEVs'])
+    sns.regplot(x=dfCensus2[col], y=dfCensus2['Total BEVs'], scatter=False, color='red')
+    plt.title(f"Total BEVs Reg. vs {col}")
+    plt.xlabel(col)
+    plt.ylabel("Total BEVs Re.")
+    plt.tight_layout()
+    plt.show()
+
+#-----------------------------------------------------------------------------------------------
+
+
+
 # dataframe1 = pd.read_csv('evdata Table V2.7.csv')
 # dataframe2 = dataframe1
 # res = list(dataframe2.columns)
@@ -380,6 +473,56 @@ plt.legend(['Registered Cars','Household'])
 #function to show the plot
 plt.show()
 
+# version %%%
+df1 = pd.read_csv('AdminCounty2022.csv')
+df1 = df1[['County','T6_10_RE','T6_10_NORE','T6_10_NS','T6_10_T']]
+df2 = pd.read_csv('CountyCountyEVdf.csv')
+
+ire_val = df1['T6_10_RE'].iloc[-1]
+df1['Renewables%'] = (df1['T6_10_RE']/df1['T6_10_T'])*100
+df1['NoRenewables%'] = (df1['T6_10_NORE']/df1['T6_10_T'])*100
+
+df1.drop(df1.tail(1).index,
+        inplace = True)
+#df2.drop(df2.tail(1).index,
+#        inplace = True)
+
+print(df1['County'])
+df1.insert(1,'Quantity', df2['Quantity'])
+
+# x1 = df1['Quantity']
+# y1 = df1['Renewables%']
+# plt.scatter(x1,y1)
+
+# #naming the x axis
+# plt.xlabel('Number of Registered cars')
+# # naming the y axis
+# plt.ylabel('Number of Housholds')
+# # giving a title to my graph
+# plt.title('Households with Renewable Energy vs number of registered EVs & Plugins car')
+# #show a legend on the plot
+# plt.legend()
+# #function to show the plot
+# plt.show()
+
+value_remove = ['Dublin']
+df4 = df1[~df1['County'].isin(value_remove)]
+y2 = df4['Quantity']
+x2 = df4['Renewables%']
+
+plt.scatter(x2,y2)
+
+#naming the x axis
+plt.xlabel('% Share of Households')
+# naming the y axis
+plt.ylabel('Number of Registered cars')
+# giving a title to my graph
+plt.title('Households with Renewable Energy vs number of registered BEVs')
+#show a legend on the plot
+plt.legend()
+#function to show the plot
+plt.show()
+
 #--------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
@@ -425,6 +568,63 @@ plt.legend(['Registered Cars','Higher Professional'])
 plt.show()
 
 print('yay')
+
+#% version
+df1 = pd.read_csv('AdminCounty2022.csv')
+df1 = df1[['County','T9_2_PB','T9_2_PT']]
+df2 = pd.read_csv('CountyCountyEVdf.csv')
+
+ire_val = df1['T9_2_PB'].iloc[-1]
+df1['HigherProfs%'] = (df1['T9_2_PB']/df1['T9_2_PT'])*100
+
+df1.drop(df1.tail(1).index,
+        inplace = True)
+#df2.drop(df2.tail(1).index,
+#        inplace = True)
+
+
+
+print(df1['County'])
+df1.insert(1,'Quantity', df2['Quantity'])
+
+df5 = pd.read_excel('passenger-cars-by-county.xlsx')
+df1['Quantity%'] = (df1['Quantity']/df5['2024 Units'])*100
+
+y1 = df1['Quantity%']
+x1 = df1['HigherProfs%']
+plt.scatter(x1,y1)
+
+#naming the x axis
+plt.xlabel('% Share of Population')
+# naming the y axis
+plt.ylabel('% Share of Registered cars')
+# giving a title to my graph
+plt.title('Higher Professionals vs number of registered BEVs')
+#show a legend on the plot
+plt.legend()
+#function to show the plot
+plt.show()
+
+
+# value_remove = ['Dublin']
+# df4 = df1[~df1['County'].isin(value_remove)]
+# y2 = df4['Quantity']
+# x2 = df4['HigherProfs%']
+
+# plt.scatter(x2,y2)
+
+# #naming the x axis
+# plt.xlabel('% Share of Households')
+# # naming the y axis
+# plt.ylabel('Number of Registered cars')
+# # giving a title to my graph
+# plt.title('Higher Professionals vs vs number of registered BEVs')
+# #show a legend on the plot
+# plt.legend()
+# #function to show the plot
+# plt.show()
+
+print('done')
 #--------------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------
 #----------------------------Commuter Type vs Reg cars
